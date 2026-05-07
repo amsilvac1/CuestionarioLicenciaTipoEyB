@@ -20,7 +20,11 @@
         </button>
       </div>
 
-      <div class="quiz-info">
+      <button class="view-all" @click="toggleRespuestas">
+        {{ verRespuestas ? 'Volver al cuestionario' : 'Ver todas las respuestas' }}
+      </button>
+
+      <div class="quiz-info" v-if="!verRespuestas">
         <p>Preguntas por intento: <strong>{{ total }}</strong></p>
         <p>Respondidas: <strong>{{ respondidas }}</strong></p>
         <p>Correctas: <strong>{{ puntaje }}</strong></p>
@@ -28,7 +32,52 @@
     </aside>
 
     <main class="quiz-root">
-      <div v-if="current && !finished">
+      <div v-if="verRespuestas">
+        <section class="answers-view">
+          <h2>
+            Respuestas de licencia tipo <span class="tipo">{{ tipoLicencia }}</span>
+          </h2>
+          <p class="answers-meta">
+            Total de preguntas: <strong>{{ todasPreguntas.length }}</strong>
+          </p>
+
+          <div class="answers-list">
+            <div v-for="p in todasPreguntas" :key="p.id" class="answer-item">
+              <div class="answer-q">
+                <span class="q-id">#{{ p.id }}</span>
+                <span class="q-text">{{ p.pregunta }}</span>
+              </div>
+              <div v-if="p.imagen" class="answer-media">
+                <img
+                  class="answer-img"
+                  :src="imagenSrc(p.imagen)"
+                  :alt="`Imagen pregunta ${p.id}`"
+                  loading="lazy"
+                />
+              </div>
+              <div class="answer-options">
+                <p class="options-title">Opciones:</p>
+                <ul class="options-list">
+                  <li
+                    v-for="op in p.opciones"
+                    :key="op"
+                    :class="[
+                      'option-pill',
+                      op === p.respuesta ? 'option-correct' : 'option-wrong',
+                    ]"
+                  >
+                    <span class="badge" v-if="op === p.respuesta">Correcta</span>
+                    <span class="badge badge-wrong" v-else>Incorrecta</span>
+                    <span class="option-text">{{ op }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div v-else-if="current && !finished">
         <QuestionCard
           :key="current.id"
           :pregunta="current"
@@ -38,7 +87,7 @@
       </div>
 
       <Resultados
-        v-if="finished"
+        v-else-if="finished"
         :puntaje="puntaje"
         :total="total"
         @restart-all="restartAll"
@@ -62,20 +111,30 @@ function shuffle(arr) {
   return a
 }
 
+function imagenSrc(img) {
+  if (!img) return ''
+  if (img.startsWith('/')) {
+    return `${import.meta.env.BASE_URL}${img.slice(1)}`
+  }
+  return img
+}
+
 const MAX_QUESTIONS = 20
 const tipoLicencia = ref('E')
 const puntaje = ref(0)
 const queue = ref([])
 const totalCount = ref(0)
 const finished = ref(false)
+const verRespuestas = ref(false)
 
 const current = computed(() => (queue.value.length ? queue.value[0] : null))
 const total = computed(() => totalCount.value)
 const respondidas = computed(() => total.value - queue.value.length)
+const todasPreguntas = computed(() => preguntasPorTipo(tipoLicencia.value))
 
 function preguntasPorTipo(tipo) {
   return allPreguntas.filter((p) => {
-    const base = p.id >= 1 && p.id <= 129
+    const base = p.id >= 1 && p.id <= 139
     const bloqueE = p.id >= 140 && p.id <= 164
     const bloqueB = p.id >= 165 && p.id <= 178
 
@@ -106,7 +165,7 @@ function inicializarQuiz() {
 function cambiarTipoLicencia(tipo) {
   if (tipoLicencia.value === tipo) return
   tipoLicencia.value = tipo
-  inicializarQuiz()
+  if (!verRespuestas.value) inicializarQuiz()
 }
 
 function verificarRespuesta(payload) {
@@ -124,6 +183,14 @@ function verificarRespuesta(payload) {
 
 function restartAll() {
   inicializarQuiz()
+}
+
+function toggleRespuestas() {
+  verRespuestas.value = !verRespuestas.value
+  if (!verRespuestas.value) {
+    // Si volvemos al cuestionario, recalculamos con la licencia seleccionada.
+    inicializarQuiz()
+  }
 }
 
 inicializarQuiz()
@@ -153,6 +220,27 @@ inicializarQuiz()
 
 .quiz-dashboard h3 {
   margin: 0 0 12px;
+}
+
+.view-all {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.view-all:hover:not(:disabled) {
+  background: rgba(11, 132, 255, 0.12);
+  border-color: rgba(11, 132, 255, 0.7);
+}
+
+.view-all:active {
+  transform: translateY(1px);
 }
 
 .license-selector {
@@ -195,6 +283,131 @@ inicializarQuiz()
   color: var(--text-h);
 }
 
+.answers-view {
+  padding: 10px 2px 0;
+}
+
+.answers-view h2 {
+  margin: 0 0 8px;
+}
+
+.tipo {
+  color: var(--accent);
+}
+
+.answers-meta {
+  margin: 0 0 14px;
+  color: var(--text-h);
+}
+
+.answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.answer-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 14px;
+}
+
+.answer-media {
+  margin: 6px 0 10px;
+}
+
+.answer-img {
+  width: 100%;
+  max-width: 560px;
+  max-height: 200px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.answer-q {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.q-id {
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.q-text {
+  font-weight: 700;
+}
+
+.answer-a {
+  color: var(--text-h);
+}
+
+.answer-options {
+  margin-top: 6px;
+}
+
+.options-title {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: var(--text-h);
+}
+
+.options-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.option-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.option-correct {
+  border-color: #00a31e;
+  background: rgba(0, 163, 30, 0.12);
+}
+
+.option-wrong {
+  opacity: 0.85;
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #00a31e;
+  color: #fff;
+}
+
+.badge-wrong {
+  background: #555;
+}
+
+.option-text {
+  flex: 1;
+}
+
 @media (max-width: 900px) {
   .quiz-layout {
     grid-template-columns: 1fr;
@@ -203,6 +416,16 @@ inicializarQuiz()
 
   .quiz-dashboard {
     position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .answer-item {
+    padding: 12px;
+  }
+
+  .answer-img {
+    max-height: 150px;
   }
 }
 </style>
