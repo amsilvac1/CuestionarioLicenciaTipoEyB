@@ -365,7 +365,7 @@ inicializarQuiz()
 
 .toggle-btn:hover {
   border-color: var(--clr-border-h);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--clr-accent-bg);
 }
 
 .toggle-btn.active {
@@ -411,7 +411,7 @@ inicializarQuiz()
   gap: 8px;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--clr-surface-2);
   border: 1px solid var(--clr-border);
 }
 

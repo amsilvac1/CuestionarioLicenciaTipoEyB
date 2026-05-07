@@ -228,7 +228,7 @@ const ringOffset = computed(() => {
   align-items: center;
   gap: 24px;
   padding: 16px 24px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--clr-surface-2);
   border-radius: var(--radius-md);
   border: 1px solid var(--clr-border);
   width: 100%;

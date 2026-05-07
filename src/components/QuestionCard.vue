@@ -229,7 +229,7 @@ function goToNext() {
   position: relative;
   width: 100%;
   max-width: 520px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--clr-surface-2);
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--clr-border);
@@ -277,7 +277,7 @@ function goToNext() {
   padding: 14px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--clr-border);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--clr-surface-2);
   color: var(--clr-text);
   font-family: var(--ff-sans);
   font-size: var(--fs-base);
