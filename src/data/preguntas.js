@@ -392,9 +392,9 @@ export const preguntas = [
     opciones: [
       'Más adelante vía lateral',
       'Más adelante cruce de vías',
-      "Más adelante intersección en 'Y'",
+      'Más adelante intersección en Y',
     ],
-    respuesta: 'Más adelante cruce de vías',
+    respuesta: 'Más adelante intersección en Y',
     imagen: '/imagenes/37.jpg',
   },
   {
@@ -416,7 +416,7 @@ export const preguntas = [
       'Más adelante circulación en una vía',
       'Más adelante vire a la derecha',
     ],
-    respuesta: 'Más adelante circulación en doble vía',
+    respuesta: 'Más adelante circulación en doble vía (bidireccional)',
     imagen: '/imagenes/39.jpg',
   },
   {
@@ -438,7 +438,8 @@ export const preguntas = [
       'Más adelante curva abierta a la derecha',
       'Más adelante curva y contra curva cerrada a la derecha en la dirección señalada',
     ],
-    respuesta: 'Más adelante curva pronunciada a la derecha',
+    respuesta:
+      'Más adelante curva y contra curva cerrada a la derecha en la dirección señalada',
     imagen: '/imagenes/41.jpg',
   },
   {
@@ -625,8 +626,7 @@ export const preguntas = [
       'Luces rojas continuas, flechas rojas y luces amarillas intermitentes',
       'Luces rojas continuas, luces rojas intermitentes y luces amarillas',
     ],
-    respuesta:
-      'Luces rojas continuas, luces rojas intermitentes y luces amarillas',
+    respuesta: 'Luces rojas y luces rojas intermitentes',
   },
   {
     id: 59,
@@ -669,7 +669,7 @@ export const preguntas = [
       'Más adelante angostamiento de vía',
       'Más adelante parterre comienza',
     ],
-    respuesta: 'Más adelante parterre comienza',
+    respuesta: 'Más adelante parterre termina',
     imagen: '/imagenes/62.jpg',
   },
   {
@@ -680,12 +680,12 @@ export const preguntas = [
       'Más adelante angostamiento de vía',
       'Más adelante parterre comienza',
     ],
-    respuesta: 'Más adelante parterre termina',
+    respuesta: 'Más adelante parterre comienza',
     imagen: '/imagenes/63.jpg',
   },
   {
     id: 64,
-    pregunta: '¿Qué significa esta señal? (Vaca)',
+    pregunta: '¿Qué significa esta señal?',
     opciones: [
       'Más adelante cruce de ganado',
       'Más adelante cruce de peatones',
@@ -768,8 +768,7 @@ export const preguntas = [
       'Disminuir la velocidad y atravesar la intersección con mucha precaución',
       'Parar, ceda el paso a todo el tráfico que cruza antes de atravesar la intersección',
     ],
-    respuesta:
-      'Parar, ceda el paso a todo el tráfico que cruza antes de atravesar la intersección',
+    respuesta: 'Parar, siempre',
   },
   {
     id: 72,
@@ -819,7 +818,7 @@ export const preguntas = [
     pregunta:
       '¿El conductor que mantenga los 30 puntos se beneficiará del 30% en el pago de la especie de la licencia?',
     opciones: ['VERDADERO', 'FALSO', 'DESCONOCE'],
-    respuesta: 'VERDADERO',
+    respuesta: 'FALSO',
   },
   {
     id: 78,
@@ -876,7 +875,7 @@ export const preguntas = [
       'Revocatoria definitiva de la licencia para conducir',
       'Ninguna de las anteriores',
     ],
-    respuesta: 'Pena privativa de la libertad de doce a veinte años',
+    respuesta: 'Revocatoria definitiva de la licencia para conducir',
   },
   {
     id: 85,
@@ -1056,11 +1055,11 @@ export const preguntas = [
     pregunta: '¿Qué significa el espacio de la berma?',
     opciones: [
       'Estacionamiento',
-      ' exclusivo para circulación de peatones, ciclistas y movilidad personal',
+      'Espacio exclusivo para circulación de peatones, ciclistas y movilidad personal',
       'Carril para circulación de motos',
     ],
     respuesta:
-      ' exclusivo para circulación de peatones, ciclistas y movilidad personal',
+      'Espacio exclusivo para circulación de peatones, ciclistas y movilidad personal',
   },
   {
     id: 104,
@@ -1194,14 +1193,14 @@ export const preguntas = [
   },
   {
     id: 116,
-    pregunta: 'Los niños menores de 12 años PODRAN VIAJAR EN:',
+    pregunta: 'Los niños menores de 12 años podran viajar en:',
     opciones: [
       'Asiento delantero con cinturón',
       'Asiento delantero sin cinturón',
-      'Asientos posteriores con sistemas de retención infantil de acuerdo a la edad y altura',
+      'Asientos posteriores utilizando los sistemas de retención infantil de acuerdo a la edad y altura',
     ],
     respuesta:
-      'Asientos posteriores con sistemas de retención infantil de acuerdo a la edad y altura',
+      'Asientos posteriores utilizando los sistemas de retención infantil de acuerdo a la edad y altura',
   },
   {
     id: 117,
@@ -1444,7 +1443,8 @@ export const preguntas = [
       ' Emplear técnicas de conducción a la defensiva',
       'Todas las anteriores',
     ],
-    respuesta: 'Todas las anteriores',
+    respuesta:
+      'Realizar un curso de capacitación obligatorio del cual obtendrán un certificado que abalice que se encuentran aptos para realizar esta actividad',
   },
   {
     id: 144,
@@ -1495,7 +1495,7 @@ export const preguntas = [
     pregunta:
       '¿Con que periodicidad los conductores profesionales se someterán a exámenes médicos?',
     opciones: ['Cada año', 'Cada dos años', 'No requieren exámenes médicos'],
-    respuesta: 'Cada dos años',
+    respuesta: 'Cada año',
   },
   {
     id: 149,
@@ -1561,7 +1561,7 @@ export const preguntas = [
     pregunta:
       '¿Cuál es la forma correcta de colocar cargas pesadas que no ocupan el área total del piso de un remolque?',
     opciones: ['A', 'B', 'Las dos anteriores'],
-    respuesta: 'A',
+    respuesta: 'B',
     imagen: '/imagenes/156.jpg',
   },
   {
@@ -1599,10 +1599,10 @@ export const preguntas = [
     pregunta: 'Los espejos convexos hacen que la imagen se vea:',
     opciones: [
       'Más cercana de lo que realmente se encuentra',
-      '. Más lejana de lo que realmente se encuentra',
-      '. Exactamente igual a lo que realmente se encuentra',
+      'Más lejana de lo que realmente se encuentra',
+      'Exactamente igual a lo que realmente se encuentra',
     ],
-    respuesta: '. Más lejana de lo que realmente se encuentra',
+    respuesta: 'Más cercana de lo que realmente se encuentra',
   },
   {
     id: 161,

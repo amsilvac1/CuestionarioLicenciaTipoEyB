@@ -1,45 +1,107 @@
 <template>
-  <div class="question-card">
-    <h2 class="q-title">{{ pregunta.pregunta }}</h2>
+  <div class="question-card glass-card" :class="{ 'card-answered': seleccion }">
+    <!-- Header with question number indicator -->
+    <header class="card-header">
+      <span class="question-badge">Pregunta</span>
+    </header>
 
-    <div class="q-media">
-      <img
-        v-if="pregunta.imagen"
-        :src="imagenSrc"
-        :alt="`Imagen pregunta ${pregunta.id || ''}`"
-        loading="lazy"
-      />
+    <!-- Question text -->
+    <h2 class="card-question">{{ pregunta.pregunta }}</h2>
+
+    <!-- Image (if any) -->
+    <div class="card-media" v-if="pregunta.imagen">
+      <div class="media-frame">
+        <img
+          :src="imagenSrc"
+          :alt="`Imagen pregunta ${pregunta.id || ''}`"
+          loading="lazy"
+          @error="imgError = true"
+        />
+        <div class="media-overlay" v-if="imgError">
+          <span class="media-fallback">🖼️ Imagen no disponible</span>
+        </div>
+      </div>
     </div>
 
-    <div class="opciones">
+    <!-- Options -->
+    <div class="card-options">
       <button
-        v-for="opcion in pregunta.opciones"
+        v-for="(opcion, idx) in pregunta.opciones"
         :key="opcion"
+        class="option-btn"
         :class="buttonClass(opcion)"
         :disabled="bloqueado"
         @click="handleSelect(opcion)"
       >
-        <span class="option-text">{{ opcion }}</span>
-        <span class="check" v-if="seleccion && opcion === pregunta.respuesta"
-          >✔</span
-        >
+        <span class="option-letter">{{ letters[idx] }}</span>
+        <span class="option-label">{{ opcion }}</span>
         <span
-          class="cross"
+          class="option-icon"
+          v-if="seleccion && opcion === pregunta.respuesta"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </span>
+        <span
+          class="option-icon"
           v-if="
             seleccion &&
             opcion === seleccion &&
             seleccion !== pregunta.respuesta
           "
-          >✖</span
         >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </span>
       </button>
     </div>
 
-    <div class="question-actions" v-if="seleccion">
-      <button class="next-btn" @click="goToNext">
-        Siguiente pregunta
+    <!-- Footer -->
+    <footer class="card-footer" v-if="seleccion">
+      <div
+        class="feedback-msg"
+        :class="esCorrecta ? 'feedback-correct' : 'feedback-wrong'"
+      >
+        <span v-if="esCorrecta">✅ ¡Correcto!</span>
+        <span v-else>❌ Respuesta incorrecta</span>
+      </div>
+      <button class="btn btn-primary next-btn" @click="goToNext">
+        Siguiente
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
       </button>
-    </div>
+    </footer>
   </div>
 </template>
 
@@ -53,6 +115,9 @@ const emit = defineEmits(['responder'])
 
 const seleccion = ref(null)
 const bloqueado = ref(false)
+const imgError = ref(false)
+const letters = ['A', 'B', 'C', 'D', 'E', 'F']
+
 const imagenSrc = computed(() => {
   const img = props.pregunta?.imagen
   if (!img) return ''
@@ -62,15 +127,19 @@ const imagenSrc = computed(() => {
   return img
 })
 
+const esCorrecta = computed(() => {
+  return seleccion.value === props.pregunta.respuesta
+})
+
 function buttonClass(opcion) {
   if (!seleccion.value) return ''
-  if (opcion === props.pregunta.respuesta) return 'correct'
+  if (opcion === props.pregunta.respuesta) return 'opt-correct'
   if (
     opcion === seleccion.value &&
     seleccion.value !== props.pregunta.respuesta
   )
-    return 'wrong'
-  return 'dim'
+    return 'opt-wrong'
+  return 'opt-dim'
 }
 
 function handleSelect(opcion) {
@@ -91,141 +160,307 @@ function goToNext() {
 </script>
 
 <style scoped>
+/* ── Card Container ── */
 .question-card {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.664), rgba(0, 0, 0, 0.95));
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  max-width: 720px;
+  padding: 28px;
+  max-width: 760px;
   width: 100%;
-  margin: 0 auto 16px;
-  min-height: 760px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  gap: 20px;
+  animation: scaleIn 0.35s var(--ease-out) both;
+  position: relative;
+  overflow: hidden;
 }
 
-.q-title {
-  margin-bottom: 12px;
-}
-
-.q-media {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 12px;
-  min-height: 250px;
-}
-
-.q-media img {
-  width: 100%;
-  max-width: 560px;
-  max-height: 250px;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.opciones {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.opciones button {
-  text-align: left;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s;
-  font-size: 16px;
-}
-
-.opciones button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.opciones button.correct {
-  border-color: #00a31e;
-}
-
-.opciones button.wrong {
-  border-color: #ff0000;
-}
-
-.opciones button.dim {
+/* Subtle top‑border accent glow */
+.question-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--clr-accent),
+    var(--clr-accent-light),
+    var(--clr-accent)
+  );
+  border-radius: 3px 3px 0 0;
   opacity: 0.7;
 }
 
-.opciones button:disabled {
+/* ── Header ── */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.question-badge {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-accent-light);
+  background: var(--clr-accent-bg);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+}
+
+/* ── Question Title ── */
+.card-question {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--clr-text-h);
+}
+
+/* ── Media ── */
+.card-media {
+  display: flex;
+  justify-content: center;
+}
+
+.media-frame {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--clr-border);
+}
+
+.media-frame img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  display: block;
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+.media-frame:hover img {
+  transform: scale(1.02);
+}
+
+.media-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-surface-2);
+}
+
+.media-fallback {
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+}
+
+/* ── Options ── */
+.card-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--clr-text);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform var(--t-fast) var(--ease-spring),
+    border-color var(--t-fast) var(--ease-out),
+    background var(--t-fast) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.option-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), transparent);
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.option-btn:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--clr-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(108, 92, 231, 0.15);
+}
+
+.option-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.option-btn:disabled {
   cursor: default;
 }
 
-.question-actions {
-  margin-top: 14px;
+/* Letter badge */
+.option-letter {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  flex-shrink: 0;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+
+.option-btn:hover:not(:disabled) .option-letter {
+  background: var(--clr-accent-bg);
+  color: var(--clr-accent-light);
+  border-color: rgba(108, 92, 231, 0.3);
+}
+
+.option-label {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.option-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  animation: scaleIn 0.25s var(--ease-spring) both;
+}
+
+/* ── Correct / Wrong / Dim states ── */
+.opt-correct {
+  border-color: var(--clr-correct) !important;
+  background: var(--clr-correct-bg) !important;
+}
+.opt-correct .option-letter {
+  background: var(--clr-correct) !important;
+  color: #fff !important;
+  border-color: var(--clr-correct) !important;
+}
+.opt-correct .option-icon {
+  color: var(--clr-correct);
+}
+.opt-correct .option-label {
+  color: var(--clr-text-h);
+}
+
+.opt-wrong {
+  border-color: var(--clr-wrong) !important;
+  background: var(--clr-wrong-bg) !important;
+}
+.opt-wrong .option-letter {
+  background: var(--clr-wrong) !important;
+  color: #fff !important;
+  border-color: var(--clr-wrong) !important;
+}
+.opt-wrong .option-icon {
+  color: var(--clr-wrong);
+}
+
+.opt-dim {
+  opacity: 0.4;
+}
+
+/* ── Footer ── */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--clr-border);
+  animation: fadeInUp 0.3s var(--ease-out) both;
+}
+
+.feedback-msg {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+}
+
+.feedback-correct {
+  background: var(--clr-correct-bg);
+  color: var(--clr-correct);
+  border: 1px solid var(--clr-correct-border);
+}
+
+.feedback-wrong {
+  background: var(--clr-wrong-bg);
+  color: var(--clr-wrong);
+  border: 1px solid var(--clr-wrong-border);
 }
 
 .next-btn {
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #0b84ff, #5f38ff);
-  color: #fff;
+  padding: 10px 22px;
+  font-size: var(--fs-sm);
   font-weight: 700;
-  font-size: 15px;
-  padding: 10px 18px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition:
-    transform 0.12s ease,
-    filter 0.2s ease;
 }
 
-.next-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-}
-
-.next-btn:active {
-  transform: translateY(0);
-}
-
-.next-btn:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
-
+/* ── Responsive ── */
 @media (max-width: 600px) {
   .question-card {
-    min-height: 690px;
+    padding: 20px 16px;
+    gap: 16px;
   }
 
-  .q-media img {
-    max-height: 160px;
+  .card-question {
+    font-size: var(--fs-md);
   }
 
-  .opciones button {
-    font-size: 15px;
+  .media-frame img {
+    max-height: 180px;
   }
 
-  .question-actions {
-    justify-content: center;
+  .option-btn {
+    padding: 12px 14px;
+    font-size: var(--fs-sm);
+    gap: 10px;
+  }
+
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    font-size: var(--fs-xs);
+  }
+
+  .card-footer {
+    flex-direction: column;
+    gap: 12px;
   }
 
   .next-btn {
     width: 100%;
-    max-width: 320px;
   }
 }
 </style>

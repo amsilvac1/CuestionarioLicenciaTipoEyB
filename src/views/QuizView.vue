@@ -1,91 +1,147 @@
 <template>
   <div class="quiz-layout">
-    <aside class="quiz-dashboard">
-      <h3>Dashboard</h3>
-      <div class="license-selector">
-        <strong>Tipo de licencia</strong>
-        <button
-          class="lic"
-          :class="{ active: tipoLicencia === 'B' }"
-          @click="cambiarTipoLicencia('B')"
-        >
-          B
-        </button>
-        <button
-          class="lic"
-          :class="{ active: tipoLicencia === 'E' }"
-          @click="cambiarTipoLicencia('E')"
-        >
-          E
-        </button>
+    <!-- ── Sidebar / Dashboard ── -->
+    <aside class="sidebar glass-card">
+      <!-- Logo / Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <div class="brand-text">
+          <h3 class="brand-title">Licencia EC</h3>
+          <span class="brand-sub">Cuestionario de práctica</span>
+        </div>
       </div>
 
-      <button class="view-all" @click="toggleRespuestas">
-        {{ verRespuestas ? 'Volver al cuestionario' : 'Ver todas las respuestas' }}
-      </button>
+      <!-- License Type Selector -->
+      <div class="sidebar-section">
+        <label class="section-label">Tipo de licencia</label>
+        <div class="license-toggle">
+          <button
+            class="toggle-btn"
+            :class="{ active: tipoLicencia === 'B' }"
+            @click="cambiarTipoLicencia('B')"
+          >
+            <span class="toggle-letter">B</span>
+            <span class="toggle-desc">Particular</span>
+          </button>
+          <button
+            class="toggle-btn"
+            :class="{ active: tipoLicencia === 'E' }"
+            @click="cambiarTipoLicencia('E')"
+          >
+            <span class="toggle-letter">E</span>
+            <span class="toggle-desc">Profesional</span>
+          </button>
+        </div>
+      </div>
 
-      <div class="quiz-info" v-if="!verRespuestas">
-        <p>Preguntas por intento: <strong>{{ total }}</strong></p>
-        <p>Respondidas: <strong>{{ respondidas }}</strong></p>
-        <p>Correctas: <strong>{{ puntaje }}</strong></p>
+      <!-- Progress (quiz mode) -->
+      <div class="sidebar-section" v-if="!verRespuestas && !finished">
+        <label class="section-label">Progreso</label>
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            :style="{ width: progressPct + '%' }"
+          ></div>
+        </div>
+        <span class="progress-text">{{ respondidas }} / {{ total }} preguntas</span>
+      </div>
+
+      <!-- Stats (quiz mode) -->
+      <div class="sidebar-section" v-if="!verRespuestas">
+        <label class="section-label">Estadísticas</label>
+        <div class="sidebar-stats">
+          <div class="mini-stat">
+            <span class="mini-stat-icon correct-dot"></span>
+            <span class="mini-stat-label">Correctas</span>
+            <span class="mini-stat-value correct-val">{{ puntaje }}</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-icon wrong-dot"></span>
+            <span class="mini-stat-label">Incorrectas</span>
+            <span class="mini-stat-value wrong-val">{{ incorrectasCount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- View All Answers Button -->
+      <div class="sidebar-section sidebar-actions">
+        <button class="btn btn-ghost view-answers-btn" @click="toggleRespuestas">
+          <svg v-if="!verRespuestas" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          {{ verRespuestas ? 'Volver al cuestionario' : 'Ver todas las respuestas' }}
+        </button>
       </div>
     </aside>
 
-    <main class="quiz-root">
-      <div v-if="verRespuestas">
-        <section class="answers-view">
+    <!-- ── Main Content ── -->
+    <main class="quiz-main">
+      <!-- Answers View -->
+      <div v-if="verRespuestas" class="answers-container">
+        <header class="answers-header">
           <h2>
-            Respuestas de licencia tipo <span class="tipo">{{ tipoLicencia }}</span>
+            Respuestas – Licencia tipo
+            <span class="accent-text">{{ tipoLicencia }}</span>
           </h2>
-          <p class="answers-meta">
-            Total de preguntas: <strong>{{ todasPreguntas.length }}</strong>
+          <p class="answers-count">
+            {{ todasPreguntas.length }} preguntas en total
           </p>
+        </header>
 
-          <div class="answers-list">
-            <div v-for="p in todasPreguntas" :key="p.id" class="answer-item">
-              <div class="answer-q">
-                <span class="q-id">#{{ p.id }}</span>
-                <span class="q-text">{{ p.pregunta }}</span>
-              </div>
-              <div v-if="p.imagen" class="answer-media">
-                <img
-                  class="answer-img"
-                  :src="imagenSrc(p.imagen)"
-                  :alt="`Imagen pregunta ${p.id}`"
-                  loading="lazy"
-                />
-              </div>
-              <div class="answer-options">
-                <p class="options-title">Opciones:</p>
-                <ul class="options-list">
-                  <li
-                    v-for="op in p.opciones"
-                    :key="op"
-                    :class="[
-                      'option-pill',
-                      op === p.respuesta ? 'option-correct' : 'option-wrong',
-                    ]"
-                  >
-                    <span class="badge" v-if="op === p.respuesta">Correcta</span>
-                    <span class="badge badge-wrong" v-else>Incorrecta</span>
-                    <span class="option-text">{{ op }}</span>
-                  </li>
-                </ul>
-              </div>
+        <div class="answers-list">
+          <div
+            v-for="p in todasPreguntas"
+            :key="p.id"
+            class="answer-card glass-card"
+          >
+            <div class="answer-header">
+              <span class="answer-id">#{{ p.id }}</span>
+              <span class="answer-question">{{ p.pregunta }}</span>
             </div>
+
+            <div v-if="p.imagen" class="answer-media">
+              <img
+                class="answer-img"
+                :src="imagenSrc(p.imagen)"
+                :alt="`Imagen pregunta ${p.id}`"
+                loading="lazy"
+              />
+            </div>
+
+            <ul class="answer-options">
+              <li
+                v-for="op in p.opciones"
+                :key="op"
+                class="answer-option"
+                :class="op === p.respuesta ? 'answer-opt-correct' : 'answer-opt-default'"
+              >
+                <span class="badge" :class="op === p.respuesta ? 'badge-correct' : 'badge-wrong'">
+                  {{ op === p.respuesta ? 'Correcta' : 'Incorrecta' }}
+                </span>
+                <span class="answer-opt-text">{{ op }}</span>
+              </li>
+            </ul>
           </div>
-        </section>
+        </div>
       </div>
 
-      <div v-else-if="current && !finished">
+      <!-- Quiz Active -->
+      <div v-else-if="current && !finished" class="quiz-active">
+        <div class="quiz-counter">
+          <span class="counter-current">{{ respondidas + 1 }}</span>
+          <span class="counter-sep">/</span>
+          <span class="counter-total">{{ total }}</span>
+        </div>
+
         <QuestionCard
           :key="current.id"
           :pregunta="current"
           @responder="verificarRespuesta"
         />
-        <h3 class="score">Puntaje actual: {{ puntaje }} / {{ total }}</h3>
       </div>
 
+      <!-- Results -->
       <Resultados
         v-else-if="finished"
         :puntaje="puntaje"
@@ -131,6 +187,13 @@ const current = computed(() => (queue.value.length ? queue.value[0] : null))
 const total = computed(() => totalCount.value)
 const respondidas = computed(() => total.value - queue.value.length)
 const todasPreguntas = computed(() => preguntasPorTipo(tipoLicencia.value))
+const progressPct = computed(() => {
+  if (!total.value) return 0
+  return (respondidas.value / total.value) * 100
+})
+const incorrectasCount = computed(() => {
+  return respondidas.value - puntaje.value
+})
 
 function preguntasPorTipo(tipo) {
   return allPreguntas.filter((p) => {
@@ -197,235 +260,390 @@ inicializarQuiz()
 </script>
 
 <style scoped>
+/* ── Layout ── */
 .quiz-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
   width: 100%;
-  max-width: 1120px;
-  padding: 18px;
+  max-width: 1200px;
+  padding: 24px;
   box-sizing: border-box;
+  animation: fadeIn 0.4s var(--ease-out) both;
 }
 
-.quiz-dashboard {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.88));
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  text-align: left;
+/* ── Sidebar ── */
+.sidebar {
+  padding: 24px 20px;
   height: fit-content;
   position: sticky;
-  top: 16px;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.quiz-dashboard h3 {
-  margin: 0 0 12px;
+/* Brand */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--clr-border);
 }
 
-.view-all {
-  width: 100%;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: inherit;
-  border-radius: 10px;
-  padding: 10px 12px;
-  cursor: pointer;
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--clr-accent), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: var(--fs-md);
   font-weight: 800;
-  margin-bottom: 14px;
+  margin: 0;
+  color: var(--clr-text-h);
 }
 
-.view-all:hover:not(:disabled) {
-  background: rgba(11, 132, 255, 0.12);
-  border-color: rgba(11, 132, 255, 0.7);
+.brand-sub {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  font-weight: 500;
 }
 
-.view-all:active {
-  transform: translateY(1px);
+/* Sections */
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.license-selector {
+.section-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-text-muted);
+}
+
+/* License Toggle */
+.license-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.toggle-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring),
+    box-shadow var(--t-normal) var(--ease-out);
+  color: var(--clr-text);
+  font-family: var(--ff-sans);
+}
+
+.toggle-btn:hover {
+  border-color: var(--clr-border-h);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.toggle-btn.active {
+  border-color: var(--clr-accent);
+  background: var(--clr-accent-bg);
+  box-shadow: 0 0 16px rgba(108, 92, 231, 0.15);
+}
+
+.toggle-letter {
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  color: var(--clr-text-muted);
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.toggle-btn.active .toggle-letter {
+  color: var(--clr-accent-light);
+}
+
+.toggle-desc {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--clr-text-muted);
+}
+
+/* Progress */
+.progress-text {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  font-weight: 500;
+}
+
+/* Stats */
+.sidebar-stats {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 16px;
 }
 
-.lic {
-  border: 1px solid var(--border);
-  background: transparent;
-  color: inherit;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-weight: 700;
+.mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--clr-border);
 }
 
-.lic:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.mini-stat-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.lic.active {
-  border-color: #0b84ff;
-  background: rgba(11, 132, 255, 0.18);
+.correct-dot { background: var(--clr-correct); }
+.wrong-dot   { background: var(--clr-wrong); }
+
+.mini-stat-label {
+  flex: 1;
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
 }
 
-.quiz-info p {
-  margin: 0 0 8px;
+.mini-stat-value {
+  font-size: var(--fs-md);
+  font-weight: 800;
 }
 
-.quiz-root {
+.correct-val { color: var(--clr-correct); }
+.wrong-val   { color: var(--clr-wrong); }
+
+/* Actions */
+.sidebar-actions {
+  margin-top: auto;
+}
+
+.view-answers-btn {
+  width: 100%;
+  font-size: var(--fs-sm);
+  padding: 10px 14px;
+}
+
+/* ── Main ── */
+.quiz-main {
   min-width: 0;
 }
 
-.score {
-  margin-top: 12px;
-  color: var(--text-h);
+/* Quiz counter */
+.quiz-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
-.answers-view {
-  padding: 10px 2px 0;
+.quiz-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  animation: fadeInUp 0.3s var(--ease-out) both;
 }
 
-.answers-view h2 {
-  margin: 0 0 8px;
+.counter-current {
+  font-size: var(--fs-2xl);
+  font-weight: 900;
+  color: var(--clr-accent-light);
 }
 
-.tipo {
-  color: var(--accent);
+.counter-sep {
+  font-size: var(--fs-lg);
+  color: var(--clr-text-muted);
+  font-weight: 500;
 }
 
-.answers-meta {
-  margin: 0 0 14px;
-  color: var(--text-h);
+.counter-total {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--clr-text-muted);
+}
+
+/* ── Answers View ── */
+.answers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 0.35s var(--ease-out) both;
+}
+
+.answers-header {
+  padding: 0 4px;
+}
+
+.answers-header h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-xl);
+}
+
+.accent-text {
+  color: var(--clr-accent-light);
+}
+
+.answers-count {
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
 }
 
 .answers-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: calc(100vh - 120px);
-  overflow: auto;
-  padding-right: 6px;
+  gap: 14px;
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
-.answer-item {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.22);
-  padding: 14px;
+.answer-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeInUp 0.3s var(--ease-out) both;
+}
+
+.answer-header {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.answer-id {
+  font-weight: 900;
+  font-size: var(--fs-sm);
+  color: var(--clr-accent-light);
+  background: var(--clr-accent-bg);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.answer-question {
+  font-weight: 600;
+  color: var(--clr-text-h);
+  font-size: var(--fs-base);
+  line-height: 1.45;
 }
 
 .answer-media {
-  margin: 6px 0 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .answer-img {
-  width: 100%;
-  max-width: 560px;
+  max-width: 480px;
   max-height: 200px;
-  height: auto;
-  display: block;
+  width: 100%;
   object-fit: contain;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.answer-q {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: baseline;
-  margin-bottom: 10px;
-}
-
-.q-id {
-  font-weight: 900;
-  color: var(--accent);
-}
-
-.q-text {
-  font-weight: 700;
-}
-
-.answer-a {
-  color: var(--text-h);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .answer-options {
-  margin-top: 6px;
-}
-
-.options-title {
-  margin: 0 0 6px;
-  font-size: 0.9rem;
-  color: var(--text-h);
-}
-
-.options-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.option-pill {
+.answer-option {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 0.92rem;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  font-size: var(--fs-sm);
+  transition: background var(--t-fast) var(--ease-out);
 }
 
-.option-correct {
-  border-color: #00a31e;
-  background: rgba(0, 163, 30, 0.12);
+.answer-opt-correct {
+  border-color: var(--clr-correct-border);
+  background: var(--clr-correct-bg);
 }
 
-.option-wrong {
-  opacity: 0.85;
+.answer-opt-default {
+  opacity: 0.7;
 }
 
-.badge {
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: #00a31e;
-  color: #fff;
-}
-
-.badge-wrong {
-  background: #555;
-}
-
-.option-text {
+.answer-opt-text {
   flex: 1;
+  line-height: 1.4;
+  color: var(--clr-text);
 }
 
+.answer-opt-correct .answer-opt-text {
+  color: var(--clr-text-h);
+}
+
+/* ── Responsive ── */
 @media (max-width: 900px) {
   .quiz-layout {
     grid-template-columns: 1fr;
-    padding: 12px;
+    padding: 16px 12px;
+    gap: 16px;
   }
 
-  .quiz-dashboard {
+  .sidebar {
     position: static;
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  .sidebar-brand {
+    padding-bottom: 16px;
   }
 }
 
 @media (max-width: 600px) {
-  .answer-item {
-    padding: 12px;
+  .quiz-layout {
+    padding: 12px 8px;
+  }
+
+  .answer-card {
+    padding: 14px;
   }
 
   .answer-img {
     max-height: 150px;
+  }
+
+  .license-toggle {
+    gap: 6px;
+  }
+
+  .toggle-btn {
+    padding: 10px 6px;
   }
 }
 </style>
