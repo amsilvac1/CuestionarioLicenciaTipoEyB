@@ -5,7 +5,19 @@
       <!-- Logo / Brand -->
       <div class="sidebar-brand">
         <div class="brand-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="9" y1="3" x2="9" y2="21" />
+          </svg>
         </div>
         <div class="brand-text">
           <h3 class="brand-title">Licencia EC</h3>
@@ -14,7 +26,7 @@
       </div>
 
       <!-- License Type Selector -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" v-if="dataset === 'licencia'">
         <label class="section-label">Tipo de licencia</label>
         <div class="license-toggle">
           <button
@@ -45,7 +57,9 @@
             :style="{ width: progressPct + '%' }"
           ></div>
         </div>
-        <span class="progress-text">{{ respondidas }} / {{ total }} preguntas</span>
+        <span class="progress-text"
+          >{{ respondidas }} / {{ total }} preguntas</span
+        >
       </div>
 
       <!-- Stats (quiz mode) -->
@@ -60,17 +74,51 @@
           <div class="mini-stat">
             <span class="mini-stat-icon wrong-dot"></span>
             <span class="mini-stat-label">Incorrectas</span>
-            <span class="mini-stat-value wrong-val">{{ incorrectasCount }}</span>
+            <span class="mini-stat-value wrong-val">{{
+              incorrectasCount
+            }}</span>
           </div>
         </div>
       </div>
 
       <!-- View All Answers Button -->
       <div class="sidebar-section sidebar-actions">
-        <button class="btn btn-ghost view-answers-btn" @click="toggleRespuestas">
-          <svg v-if="!verRespuestas" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          {{ verRespuestas ? 'Volver al cuestionario' : 'Ver todas las respuestas' }}
+        <button
+          class="btn btn-ghost view-answers-btn"
+          @click="toggleRespuestas"
+        >
+          <svg
+            v-if="!verRespuestas"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <svg
+            v-else
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          {{
+            verRespuestas
+              ? 'Volver al cuestionario'
+              : 'Ver todas las respuestas'
+          }}
         </button>
       </div>
     </aside>
@@ -81,8 +129,11 @@
       <div v-if="verRespuestas" class="answers-container">
         <header class="answers-header">
           <h2>
-            Respuestas – Licencia tipo
-            <span class="accent-text">{{ tipoLicencia }}</span>
+            Respuestas –
+            <template v-if="dataset === 'licencia'">
+              Licencia tipo <span class="accent-text">{{ tipoLicencia }}</span>
+            </template>
+            <template v-else> Cuestionario 9no semestre </template>
           </h2>
           <p class="answers-count">
             {{ todasPreguntas.length }} preguntas en total
@@ -114,9 +165,16 @@
                 v-for="op in p.opciones"
                 :key="op"
                 class="answer-option"
-                :class="op === p.respuesta ? 'answer-opt-correct' : 'answer-opt-default'"
+                :class="
+                  op === p.respuesta
+                    ? 'answer-opt-correct'
+                    : 'answer-opt-default'
+                "
               >
-                <span class="badge" :class="op === p.respuesta ? 'badge-correct' : 'badge-wrong'">
+                <span
+                  class="badge"
+                  :class="op === p.respuesta ? 'badge-correct' : 'badge-wrong'"
+                >
                   {{ op === p.respuesta ? 'Correcta' : 'Incorrecta' }}
                 </span>
                 <span class="answer-opt-text">{{ op }}</span>
@@ -153,8 +211,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { preguntas as allPreguntas } from '../data/preguntas'
+import { ref, computed, defineProps, watch } from 'vue'
+import { preguntas as preguntasLicencia } from '../data/preguntas'
+import { preguntasMineria } from '../data/mineriaDatos'
+const props = defineProps({
+  dataset: { type: String, default: 'licencia' },
+})
+const dataset = computed(() => props.dataset)
+
+watch(
+  () => props.dataset,
+  () => {
+    inicializarQuiz()
+  },
+)
 import QuestionCard from '../components/QuestionCard.vue'
 import Resultados from '../components/Resultados.vue'
 
@@ -176,7 +246,7 @@ function imagenSrc(img) {
 }
 
 const MAX_QUESTIONS = 20
-const tipoLicencia = ref('E')
+const tipoLicencia = ref('B')
 const puntaje = ref(0)
 const queue = ref([])
 const totalCount = ref(0)
@@ -186,7 +256,10 @@ const verRespuestas = ref(false)
 const current = computed(() => (queue.value.length ? queue.value[0] : null))
 const total = computed(() => totalCount.value)
 const respondidas = computed(() => total.value - queue.value.length)
-const todasPreguntas = computed(() => preguntasPorTipo(tipoLicencia.value))
+const todasPreguntas = computed(() => {
+  if (props.dataset === '9no') return preguntasMineria
+  return preguntasPorTipo(tipoLicencia.value)
+})
 const progressPct = computed(() => {
   if (!total.value) return 0
   return (respondidas.value / total.value) * 100
@@ -196,7 +269,8 @@ const incorrectasCount = computed(() => {
 })
 
 function preguntasPorTipo(tipo) {
-  return allPreguntas.filter((p) => {
+  // usa el set de preguntas de licencia (preguntasLicencia)
+  return preguntasLicencia.filter((p) => {
     const base = p.id >= 1 && p.id <= 139
     const bloqueE = p.id >= 140 && p.id <= 164
     const bloqueB = p.id >= 165 && p.id <= 178
@@ -215,7 +289,10 @@ function mezclarOpciones(pregunta) {
 }
 
 function inicializarQuiz() {
-  const banco = preguntasPorTipo(tipoLicencia.value)
+  const banco =
+    props.dataset === '9no'
+      ? preguntasMineria
+      : preguntasPorTipo(tipoLicencia.value)
   const seleccionadas = shuffle(banco)
     .slice(0, Math.min(MAX_QUESTIONS, banco.length))
     .map(mezclarOpciones)
@@ -422,8 +499,12 @@ inicializarQuiz()
   flex-shrink: 0;
 }
 
-.correct-dot { background: var(--clr-correct); }
-.wrong-dot   { background: var(--clr-wrong); }
+.correct-dot {
+  background: var(--clr-correct);
+}
+.wrong-dot {
+  background: var(--clr-wrong);
+}
 
 .mini-stat-label {
   flex: 1;
@@ -436,8 +517,12 @@ inicializarQuiz()
   font-weight: 800;
 }
 
-.correct-val { color: var(--clr-correct); }
-.wrong-val   { color: var(--clr-wrong); }
+.correct-val {
+  color: var(--clr-correct);
+}
+.wrong-val {
+  color: var(--clr-wrong);
+}
 
 /* Actions */
 .sidebar-actions {

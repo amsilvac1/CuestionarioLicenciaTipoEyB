@@ -5,13 +5,17 @@ import QuizView from './views/QuizView.vue'
 /* ── Theme ──────────────────────────────────── */
 const isDark = ref(false)
 
-watch(isDark, (dark) => {
-  if (dark) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-  }
-}, { immediate: true })
+watch(
+  isDark,
+  (dark) => {
+    if (dark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  },
+  { immediate: true },
+)
 
 function toggleTheme() {
   isDark.value = !isDark.value
@@ -19,20 +23,21 @@ function toggleTheme() {
 
 /* ── Font scale ─────────────────────────────── */
 // Steps: 0.85 · 1 · 1.15 · 1.30 · 1.45
-const SCALES = [0.85, 1, 1.15, 1.30, 1.45]
-const scaleIdx = ref(1)              // default = 1 (scale = 1)
+const SCALES = [0.85, 1, 1.15, 1.3, 1.45]
+const scaleIdx = ref(SCALES.length - 1) // default = máximo
 
 const fontScale = ref(SCALES[scaleIdx.value])
 
-watch(fontScale, (val) => {
-  document.documentElement.style.setProperty('--font-scale', val)
-}, { immediate: true })
+watch(
+  fontScale,
+  (val) => {
+    document.documentElement.style.setProperty('--font-scale', val)
+  },
+  { immediate: true },
+)
 
 function increaseFontSize() {
-  if (scaleIdx.value < SCALES.length - 1) {
-    scaleIdx.value++
-    fontScale.value = SCALES[scaleIdx.value]
-  }
+  // función mantenida por compatibilidad (no usada en UI)
 }
 
 function decreaseFontSize() {
@@ -49,6 +54,9 @@ provide('increaseFontSize', increaseFontSize)
 provide('decreaseFontSize', decreaseFontSize)
 provide('scaleIdx', scaleIdx)
 provide('scaleMax', SCALES.length - 1)
+
+// Selector de prueba por entrada
+const selectedTest = ref('licencia')
 </script>
 
 <template>
@@ -59,41 +67,6 @@ provide('scaleMax', SCALES.length - 1)
         <span class="toolbar-logo">🚗 Licencia Ecuador</span>
       </div>
       <div class="toolbar-controls">
-        <!-- Font size controls -->
-        <div class="font-controls">
-          <span class="control-label">Texto</span>
-          <button
-            class="ctrl-btn"
-            :disabled="scaleIdx <= 0"
-            @click="decreaseFontSize"
-            title="Reducir tamaño de letra"
-            aria-label="Reducir tamaño de letra"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </button>
-          <span class="font-indicator">
-            <span
-              v-for="(_, i) in 5"
-              :key="i"
-              class="dot"
-              :class="{ active: i === scaleIdx }"
-            ></span>
-          </span>
-          <button
-            class="ctrl-btn"
-            :disabled="scaleIdx >= scaleMax"
-            @click="increaseFontSize"
-            title="Aumentar tamaño de letra"
-            aria-label="Aumentar tamaño de letra"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </button>
-        </div>
-
         <!-- Theme toggle -->
         <button
           class="theme-toggle-btn"
@@ -102,28 +75,74 @@ provide('scaleMax', SCALES.length - 1)
           :aria-label="isDark ? 'Activar modo claro' : 'Activar modo oscuro'"
         >
           <!-- Sun icon – light mode -->
-          <svg v-if="isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          <svg
+            v-if="isDark"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
           </svg>
           <!-- Moon icon – dark mode -->
-          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          <svg
+            v-else
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
           </svg>
-          <span class="theme-label">{{ isDark ? 'Modo claro' : 'Modo oscuro' }}</span>
+          <span class="theme-label">{{
+            isDark ? 'Modo claro' : 'Modo oscuro'
+          }}</span>
         </button>
       </div>
     </header>
 
     <div id="center">
-      <QuizView />
+      <section class="entry-select">
+        <h3>Selecciona prueba</h3>
+        <div class="entry-buttons">
+          <button
+            :class="[
+              'btn',
+              selectedTest === 'licencia' ? 'btn-primary' : 'btn-ghost',
+            ]"
+            @click="selectedTest = 'licencia'"
+          >
+            Prueba licencia de conducir
+          </button>
+          <button
+            :class="[
+              'btn',
+              selectedTest === '9no' ? 'btn-primary' : 'btn-ghost',
+            ]"
+            @click="selectedTest = '9no'"
+          >
+            Cuestionario 9no semestre
+          </button>
+        </div>
+      </section>
+
+      <QuizView :dataset="selectedTest" />
     </div>
   </div>
 </template>
@@ -228,8 +247,9 @@ provide('scaleMax', SCALES.length - 1)
   height: 6px;
   border-radius: 50%;
   background: var(--clr-border);
-  transition: background var(--t-fast) var(--ease-out),
-              transform var(--t-fast) var(--ease-spring);
+  transition:
+    background var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring);
 }
 
 .dot.active {
