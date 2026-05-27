@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, provide } from 'vue'
+import { ref, watch, computed, provide } from 'vue'
 import QuizView from './views/QuizView.vue'
 import QuizSwitcher from './components/QuizSwitcher.vue'
 import { familyOptions } from './data/quizCatalog'
@@ -39,7 +39,10 @@ watch(
 )
 
 function increaseFontSize() {
-  // función mantenida por compatibilidad (no usada en UI)
+  if (scaleIdx.value < SCALES.length - 1) {
+    scaleIdx.value++
+    fontScale.value = SCALES[scaleIdx.value]
+  }
 }
 
 function decreaseFontSize() {
@@ -59,6 +62,22 @@ provide('scaleMax', SCALES.length - 1)
 
 // Selector de prueba por entrada
 const selectedFamily = ref('licencia')
+const showFamilyPicker = ref(false)
+
+const selectedFamilyLabel = computed(
+  () =>
+    familyOptions.find((item) => item.key === selectedFamily.value)?.title ??
+    'Selecciona una prueba',
+)
+
+function toggleFamilyPicker() {
+  showFamilyPicker.value = !showFamilyPicker.value
+}
+
+function selectFamily(familyKey) {
+  selectedFamily.value = familyKey
+  showFamilyPicker.value = false
+}
 </script>
 
 <template>
@@ -70,6 +89,58 @@ const selectedFamily = ref('licencia')
       </div>
       <div class="toolbar-controls">
         <!-- Theme toggle -->
+        <!-- Font size controls -->
+        <div class="font-controls">
+          <span class="control-label">Texto</span>
+          <button
+            class="ctrl-btn"
+            :disabled="scaleIdx <= 0"
+            @click="decreaseFontSize"
+            title="Reducir tamaño de letra"
+            aria-label="Reducir tamaño de letra"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <span class="font-indicator">
+            <span
+              v-for="(_, i) in 5"
+              :key="i"
+              class="dot"
+              :class="{ active: i === scaleIdx }"
+            ></span>
+          </span>
+          <button
+            class="ctrl-btn"
+            :disabled="scaleIdx >= scaleMax"
+            @click="increaseFontSize"
+            title="Aumentar tamaño de letra"
+            aria-label="Aumentar tamaño de letra"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+
         <button
           class="theme-toggle-btn"
           @click="toggleTheme"
@@ -119,13 +190,39 @@ const selectedFamily = ref('licencia')
       </div>
     </header>
 
-    <div id="center">
-      <QuizSwitcher
-        v-model="selectedFamily"
-        :items="familyOptions"
-        title="Selecciona una prueba"
-        description="Elige entre licencia de conducir o los cuestionarios de 9no semestre."
-      />
+    <div id="center" class="center-shell">
+      <button
+        type="button"
+        class="family-picker-trigger glass-card"
+        :class="{ open: showFamilyPicker }"
+        :aria-expanded="showFamilyPicker"
+        aria-controls="family-picker-panel"
+        @click="toggleFamilyPicker"
+      >
+        <span class="trigger-copy">
+          <span class="trigger-eyebrow">Selector de prueba</span>
+          <span class="trigger-title">{{ selectedFamilyLabel }}</span>
+        </span>
+        <span class="trigger-action">
+          {{ showFamilyPicker ? 'Cerrar' : 'Cambiar' }}
+        </span>
+      </button>
+
+      <transition name="family-panel">
+        <div
+          v-if="showFamilyPicker"
+          id="family-picker-panel"
+          class="family-picker-panel glass-card"
+        >
+          <QuizSwitcher
+            :model-value="selectedFamily"
+            :items="familyOptions"
+            title="Selecciona una prueba"
+            description="Elige entre licencia de conducir o los cuestionarios de 9no semestre."
+            @update:modelValue="selectFamily"
+          />
+        </div>
+      </transition>
 
       <QuizView :key="selectedFamily" :family="selectedFamily" />
     </div>
@@ -280,6 +377,93 @@ const selectedFamily = ref('licencia')
   white-space: nowrap;
 }
 
+.center-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 16px 28px;
+}
+
+.family-picker-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface-2);
+  color: var(--clr-text);
+  font-family: var(--ff-sans);
+  cursor: pointer;
+  transition:
+    transform var(--t-fast) var(--ease-spring),
+    border-color var(--t-fast) var(--ease-out),
+    background var(--t-fast) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out);
+}
+
+.family-picker-trigger:hover {
+  transform: translateY(-1px);
+  border-color: var(--clr-accent);
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.12);
+}
+
+.family-picker-trigger.open {
+  border-color: var(--clr-accent);
+  background: var(--clr-accent-bg);
+}
+
+.trigger-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  min-width: 0;
+}
+
+.trigger-eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-text-muted);
+}
+
+.trigger-title {
+  font-size: var(--fs-base);
+  font-weight: 800;
+  color: var(--clr-text-h);
+}
+
+.trigger-action {
+  flex-shrink: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-accent-light);
+}
+
+.family-picker-panel {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface-2);
+}
+
+.family-panel-enter-active,
+.family-panel-leave-active {
+  transition:
+    opacity var(--t-normal) var(--ease-out),
+    transform var(--t-normal) var(--ease-out);
+}
+
+.family-panel-enter-from,
+.family-panel-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
 /* Responsive toolbar */
 @media (max-width: 600px) {
   .app-toolbar {
@@ -297,6 +481,24 @@ const selectedFamily = ref('licencia')
 
   .control-label {
     display: none;
+  }
+
+  .center-shell {
+    padding: 12px 8px 20px;
+    gap: 12px;
+  }
+
+  .family-picker-trigger {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .trigger-title {
+    font-size: var(--fs-sm);
+  }
+
+  .family-picker-panel {
+    padding: 14px;
   }
 }
 </style>

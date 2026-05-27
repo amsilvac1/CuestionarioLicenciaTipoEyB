@@ -6,18 +6,46 @@
     <!-- Icon + Title -->
     <div class="results-header">
       <div class="results-icon" :class="aprobado ? 'icon-pass' : 'icon-fail'">
-        <svg v-if="aprobado" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
+        <svg
+          v-if="aprobado"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
         </svg>
-        <svg v-else width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
+        <svg
+          v-else
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+          <line x1="9" y1="9" x2="15" y2="15" />
         </svg>
       </div>
-      <h2 class="results-title">{{ aprobado ? '¡Felicidades!' : 'Sigue practicando' }}</h2>
-      <p class="results-subtitle">{{ aprobado ? 'Has aprobado el cuestionario' : 'Necesitas más preparación' }}</p>
+      <h2 class="results-title">
+        {{ aprobado ? '¡Felicidades!' : 'Sigue practicando' }}
+      </h2>
+      <p class="results-subtitle">
+        {{
+          aprobado
+            ? 'Has aprobado el cuestionario'
+            : 'Necesitas más preparación'
+        }}
+      </p>
     </div>
 
     <!-- Score ring -->
@@ -27,7 +55,9 @@
         <circle
           class="ring-fill"
           :class="aprobado ? 'ring-pass' : 'ring-fail'"
-          cx="60" cy="60" r="52"
+          cx="60"
+          cy="60"
+          r="52"
           :style="{ strokeDashoffset: ringOffset }"
         />
       </svg>
@@ -58,7 +88,19 @@
     <!-- Actions -->
     <div class="results-actions">
       <button class="btn btn-primary" @click="$emit('restart-all')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
         Reiniciar cuestionario
       </button>
     </div>
@@ -98,7 +140,7 @@ const ringOffset = computed(() => {
 <style scoped>
 .resultados {
   padding: 40px 32px;
-  max-width: 480px;
+  max-width: 520px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -125,8 +167,12 @@ const ringOffset = computed(() => {
   pointer-events: none;
 }
 
-.icon-pass ~ .results-title { color: var(--clr-correct); }
-.icon-fail ~ .results-title { color: var(--clr-wrong); }
+.icon-pass ~ .results-title {
+  color: var(--clr-correct);
+}
+.icon-fail ~ .results-title {
+  color: var(--clr-wrong);
+}
 
 .results-header {
   display: flex;
@@ -196,8 +242,12 @@ const ringOffset = computed(() => {
   transition: stroke-dashoffset 1s var(--ease-out);
 }
 
-.ring-pass { stroke: var(--clr-correct); }
-.ring-fail { stroke: var(--clr-wrong); }
+.ring-pass {
+  stroke: var(--clr-correct);
+}
+.ring-fail {
+  stroke: var(--clr-wrong);
+}
 
 .score-ring-text {
   position: absolute;
@@ -210,7 +260,8 @@ const ringOffset = computed(() => {
 
 .score-value {
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: 700;
+
   color: var(--clr-text-h);
   line-height: 1;
 }
@@ -248,8 +299,12 @@ const ringOffset = computed(() => {
   color: var(--clr-text-h);
 }
 
-.stat-correct .stat-number { color: var(--clr-correct); }
-.stat-wrong .stat-number   { color: var(--clr-wrong); }
+.stat-correct .stat-number {
+  color: var(--clr-correct);
+}
+.stat-wrong .stat-number {
+  color: var(--clr-wrong);
+}
 
 .stat-label {
   font-size: var(--fs-xs);
@@ -277,13 +332,71 @@ const ringOffset = computed(() => {
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .resultados {
-    padding: 28px 20px;
-    gap: 22px;
+    padding: 24px 16px;
+    gap: 18px;
+    max-width: 100%;
+  }
+
+  .results-header {
+    gap: 6px;
+  }
+
+  .results-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .results-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .results-title {
+    font-size: var(--fs-xl);
+  }
+
+  .results-subtitle {
+    font-size: var(--fs-sm);
+  }
+
+  .score-ring-container {
+    width: 124px;
+    height: 124px;
+  }
+
+  .score-value {
+    font-size: var(--fs-xl);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .stat-divider {
+    display: none;
+  }
+
+  .stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .stat-label {
+    letter-spacing: 0.04em;
   }
 
   .stats-grid {
     gap: 16px;
     padding: 14px 16px;
+  }
+
+  .results-actions .btn {
+    padding: 12px 14px;
+    font-size: var(--fs-sm);
   }
 }
 </style>
