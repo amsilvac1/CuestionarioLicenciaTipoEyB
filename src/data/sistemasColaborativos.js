@@ -2,7 +2,7 @@ export const preguntasSistemasColaborativos = [
   {
     id: 1,
     pregunta:
-      '¿Según el enfoque de la Inteligencia Artificial basado en actuar como humanos, cuál es el objetivo primordial al desarrollar un sistema informático? [cite: 1]',
+      '¿Según el enfoque de la Inteligencia Artificial basado en actuar como humanos, cuál es el objetivo primordial al desarrollar un sistema informático?',
     opciones: [
       'El diseño lógico de procesadores cuánticos puros.',
       'La optimización matemática de algoritmos de ordenamiento binario',
@@ -190,7 +190,7 @@ export const preguntasSistemasColaborativos = [
       'Platón a través de diálogos metafísicos sobre el alma inmortal.',
       'Euclides mediante axiomas geométricos aplicados al espacio físico real.',
       'Aristóteles mediante silogismos estructurados para garantizar deducciones válidas desde premisas correctas.',
-      'Demócrito con la teoría del átomo como unidad indivisible. [cite: 59]',
+      'Demócrito con la teoría del átomo como unidad indivisible.',
     ],
     respuesta:
       'Aristóteles mediante silogismos estructurados para garantizar deducciones válidas desde premisas correctas.',
@@ -252,7 +252,7 @@ export const preguntasSistemasColaborativos = [
     pregunta:
       'Etimológicamente, ¿de qué palabra en latín proviene el término técnico "agente" utilizado en las ciencias de la computación?',
     opciones: [
-      'De la raíz latina agere, que significa hacer en su acepción más directa',
+      'De la raíz latina agere, que significa hacer en su acepción más directa.',
       'Del vocablo cognitio, relacionado con el acto de conocimiento interno.',
       'De la palabra ratio, vinculada con el cálculo matemático proporcional.',
       'Del término sensorium, asociado con los órganos de la percepción física.',
@@ -430,7 +430,7 @@ export const preguntasSistemasColaborativos = [
       'Exige obligatoriamente la presencia de extremidades físicas articuladas en todo programa informático analizado.',
     ],
     respuesta:
-      'Porque sirve como un marco conceptual para entender el comportamiento de un system según sus interacciones.',
+      'Porque sirve como un marco conceptual para entender el comportamiento de un sistema según sus interacciones.',
   },
   {
     id: 34,
