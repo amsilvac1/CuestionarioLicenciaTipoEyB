@@ -20,32 +20,19 @@
           </svg>
         </div>
         <div class="brand-text">
-          <h3 class="brand-title">Licencia EC</h3>
-          <span class="brand-sub">Cuestionario de práctica</span>
+          <h3 class="brand-title">{{ quizConfig.title }}</h3>
+          <span class="brand-sub">{{ familyConfig.description }}</span>
         </div>
       </div>
 
-      <!-- License Type Selector -->
-      <div class="sidebar-section" v-if="dataset === 'licencia'">
-        <label class="section-label">Tipo de licencia</label>
-        <div class="license-toggle">
-          <button
-            class="toggle-btn"
-            :class="{ active: tipoLicencia === 'B' }"
-            @click="cambiarTipoLicencia('B')"
-          >
-            <span class="toggle-letter">B</span>
-            <span class="toggle-desc">Particular</span>
-          </button>
-          <button
-            class="toggle-btn"
-            :class="{ active: tipoLicencia === 'E' }"
-            @click="cambiarTipoLicencia('E')"
-          >
-            <span class="toggle-letter">E</span>
-            <span class="toggle-desc">Profesional</span>
-          </button>
-        </div>
+      <!-- Quiz Selector -->
+      <div class="sidebar-section">
+        <QuizSwitcher
+          v-model="activeQuizKey"
+          :items="quizOptions"
+          eyebrow="Cuestionario activo"
+          compact
+        />
       </div>
 
       <!-- Progress (quiz mode) -->
@@ -129,11 +116,7 @@
       <div v-if="verRespuestas" class="answers-container">
         <header class="answers-header">
           <h2>
-            Respuestas –
-            <template v-if="dataset === 'licencia'">
-              Licencia tipo <span class="accent-text">{{ tipoLicencia }}</span>
-            </template>
-            <template v-else> Cuestionario 9no semestre </template>
+            Respuestas – <span class="accent-text">{{ quizConfig.title }}</span>
           </h2>
           <p class="answers-count">
             {{ todasPreguntas.length }} preguntas en total
@@ -211,22 +194,22 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, watch } from 'vue'
-import { preguntas as preguntasLicencia } from '../data/preguntas'
-import { preguntasMineria } from '../data/mineriaDatos'
-const props = defineProps({
-  dataset: { type: String, default: 'licencia' },
-})
-const dataset = computed(() => props.dataset)
-
-watch(
-  () => props.dataset,
-  () => {
-    inicializarQuiz()
-  },
-)
+import { ref, computed, watch } from 'vue'
 import QuestionCard from '../components/QuestionCard.vue'
 import Resultados from '../components/Resultados.vue'
+import QuizSwitcher from '../components/QuizSwitcher.vue'
+import { getQuizFamily } from '../data/quizCatalog'
+
+const props = defineProps({
+  family: { type: String, default: 'licencia' },
+})
+
+const familyConfig = computed(() => getQuizFamily(props.family))
+const activeQuizKey = ref(familyConfig.value.defaultQuizKey)
+const quizConfig = computed(() =>
+  familyConfig.value.getQuiz(activeQuizKey.value),
+)
+const quizOptions = computed(() => familyConfig.value.options)
 
 function shuffle(arr) {
   const a = arr.slice()
@@ -246,7 +229,6 @@ function imagenSrc(img) {
 }
 
 const MAX_QUESTIONS = 20
-const tipoLicencia = ref('B')
 const puntaje = ref(0)
 const queue = ref([])
 const totalCount = ref(0)
@@ -257,8 +239,7 @@ const current = computed(() => (queue.value.length ? queue.value[0] : null))
 const total = computed(() => totalCount.value)
 const respondidas = computed(() => total.value - queue.value.length)
 const todasPreguntas = computed(() => {
-  if (props.dataset === '9no') return preguntasMineria
-  return preguntasPorTipo(tipoLicencia.value)
+  return quizConfig.value.questions
 })
 const progressPct = computed(() => {
   if (!total.value) return 0
@@ -268,19 +249,6 @@ const incorrectasCount = computed(() => {
   return respondidas.value - puntaje.value
 })
 
-function preguntasPorTipo(tipo) {
-  // usa el set de preguntas de licencia (preguntasLicencia)
-  return preguntasLicencia.filter((p) => {
-    const base = p.id >= 1 && p.id <= 139
-    const bloqueE = p.id >= 140 && p.id <= 164
-    const bloqueB = p.id >= 165 && p.id <= 178
-
-    if (tipo === 'E') return base || bloqueE
-    if (tipo === 'B') return base || bloqueB
-    return false
-  })
-}
-
 function mezclarOpciones(pregunta) {
   return {
     ...pregunta,
@@ -289,10 +257,7 @@ function mezclarOpciones(pregunta) {
 }
 
 function inicializarQuiz() {
-  const banco =
-    props.dataset === '9no'
-      ? preguntasMineria
-      : preguntasPorTipo(tipoLicencia.value)
+  const banco = quizConfig.value.questions ?? []
   const seleccionadas = shuffle(banco)
     .slice(0, Math.min(MAX_QUESTIONS, banco.length))
     .map(mezclarOpciones)
@@ -300,12 +265,6 @@ function inicializarQuiz() {
   totalCount.value = seleccionadas.length
   puntaje.value = 0
   finished.value = false
-}
-
-function cambiarTipoLicencia(tipo) {
-  if (tipoLicencia.value === tipo) return
-  tipoLicencia.value = tipo
-  if (!verRespuestas.value) inicializarQuiz()
 }
 
 function verificarRespuesta(payload) {
@@ -328,10 +287,14 @@ function restartAll() {
 function toggleRespuestas() {
   verRespuestas.value = !verRespuestas.value
   if (!verRespuestas.value) {
-    // Si volvemos al cuestionario, recalculamos con la licencia seleccionada.
     inicializarQuiz()
   }
 }
+
+watch(activeQuizKey, () => {
+  verRespuestas.value = false
+  inicializarQuiz()
+})
 
 inicializarQuiz()
 </script>

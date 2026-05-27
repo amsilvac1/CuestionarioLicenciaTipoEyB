@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch, provide } from 'vue'
 import QuizView from './views/QuizView.vue'
+import QuizSwitcher from './components/QuizSwitcher.vue'
+import { familyOptions } from './data/quizCatalog'
 
 /* ── Theme ──────────────────────────────────── */
 const isDark = ref(false)
@@ -56,7 +58,7 @@ provide('scaleIdx', scaleIdx)
 provide('scaleMax', SCALES.length - 1)
 
 // Selector de prueba por entrada
-const selectedTest = ref('licencia')
+const selectedFamily = ref('licencia')
 </script>
 
 <template>
@@ -64,7 +66,7 @@ const selectedTest = ref('licencia')
     <!-- ── Global Toolbar ── -->
     <header class="app-toolbar glass-card">
       <div class="toolbar-left">
-        <span class="toolbar-logo">🚗 Licencia Ecuador</span>
+        <span class="toolbar-logo">Cuestionarios interactivos</span>
       </div>
       <div class="toolbar-controls">
         <!-- Theme toggle -->
@@ -118,31 +120,14 @@ const selectedTest = ref('licencia')
     </header>
 
     <div id="center">
-      <section class="entry-select">
-        <h3>Selecciona prueba</h3>
-        <div class="entry-buttons">
-          <button
-            :class="[
-              'btn',
-              selectedTest === 'licencia' ? 'btn-primary' : 'btn-ghost',
-            ]"
-            @click="selectedTest = 'licencia'"
-          >
-            Prueba licencia de conducir
-          </button>
-          <button
-            :class="[
-              'btn',
-              selectedTest === '9no' ? 'btn-primary' : 'btn-ghost',
-            ]"
-            @click="selectedTest = '9no'"
-          >
-            Cuestionario 9no semestre
-          </button>
-        </div>
-      </section>
+      <QuizSwitcher
+        v-model="selectedFamily"
+        :items="familyOptions"
+        title="Selecciona una prueba"
+        description="Elige entre licencia de conducir o los cuestionarios de 9no semestre."
+      />
 
-      <QuizView :dataset="selectedTest" />
+      <QuizView :key="selectedFamily" :family="selectedFamily" />
     </div>
   </div>
 </template>
