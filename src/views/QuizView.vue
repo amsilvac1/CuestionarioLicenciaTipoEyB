@@ -35,6 +35,29 @@
         />
       </div>
 
+      <!-- Modo de preguntas para 9no semestre -->
+      <div class="sidebar-section" v-if="familyConfig.key === '9no'">
+        <label class="section-label">Modo de preguntas</label>
+        <div class="license-toggle">
+          <button
+            type="button"
+            class="toggle-btn"
+            :class="{ active: !useAllQuestions }"
+            @click="setUseAll(false)"
+          >
+            Solo 20
+          </button>
+          <button
+            type="button"
+            class="toggle-btn"
+            :class="{ active: useAllQuestions }"
+            @click="setUseAll(true)"
+          >
+            Todas
+          </button>
+        </div>
+      </div>
+
       <!-- Progress (quiz mode) -->
       <div class="sidebar-section" v-if="!verRespuestas && !finished">
         <label class="section-label">Progreso</label>
@@ -234,6 +257,7 @@ const queue = ref([])
 const totalCount = ref(0)
 const finished = ref(false)
 const verRespuestas = ref(false)
+const useAllQuestions = ref(false)
 
 const current = computed(() => (queue.value.length ? queue.value[0] : null))
 const total = computed(() => totalCount.value)
@@ -258,13 +282,19 @@ function mezclarOpciones(pregunta) {
 
 function inicializarQuiz() {
   const banco = quizConfig.value.questions ?? []
-  const seleccionadas = shuffle(banco)
-    .slice(0, Math.min(MAX_QUESTIONS, banco.length))
-    .map(mezclarOpciones)
+  const limit = useAllQuestions.value
+    ? banco.length
+    : Math.min(MAX_QUESTIONS, banco.length)
+  const seleccionadas = shuffle(banco).slice(0, limit).map(mezclarOpciones)
   queue.value = seleccionadas
   totalCount.value = seleccionadas.length
   puntaje.value = 0
   finished.value = false
+}
+
+function setUseAll(enable) {
+  useAllQuestions.value = !!enable
+  inicializarQuiz()
 }
 
 function verificarRespuesta(payload) {
