@@ -540,7 +540,7 @@ export const preguntas = [
       'Aproximación a una curva cerrada a la izquierda',
       'Aproximación a una vía lateral izquierda o derecha en curva',
     ],
-    respuesta: 'Aproximación a una curva cerrada a la izquierda',
+    respuesta: 'Aproximación a una vía lateral izquierda o derecha en curva',
     imagen: '/imagenes/50.png',
   },
   {
@@ -768,7 +768,7 @@ export const preguntas = [
       'Disminuir la velocidad y atravesar la intersección con mucha precaución',
       'Parar, ceda el paso a todo el tráfico que cruza antes de atravesar la intersección',
     ],
-    respuesta: 'Parar, siempre',
+    respuesta: 'Parar siempre',
   },
   {
     id: 72,
@@ -825,11 +825,12 @@ export const preguntas = [
     pregunta:
       'Si conduce con alcohol por litro de sangre de 0,1 a 0,80; ¿Qué sanción se aplica?',
     opciones: [
-      'Treinta días de privación de libertad y retención del vehículo',
-      'Cinco días de privación de libertad y retención del vehículo',
+      'Treinta días de privación de libertad y retención del vehículo por veinticuatro horas',
+      'Cinco días de privación de libertad y retención del vehículo por veinticuatro horas',
       'Ninguna de las anteriores',
     ],
-    respuesta: 'Cinco días de privación de libertad y retención del vehículo',
+    respuesta:
+      'Cinco días de privación de libertad y retención del vehículo por veinticuatro horas',
   },
   {
     id: 79,
@@ -887,7 +888,7 @@ export const preguntas = [
   {
     id: 86,
     pregunta:
-      'El conducir un vehículo con las luces no encendidas en horas de la noche o conduzca en siCos oscuros  como túneles con la luces apagadas, ¿Corresponde a una contravención de tránsito',
+      'El conducir un vehículo con las luces no encendidas en horas de la noche o conduzca en sitios oscuros  como túneles con la luces apagadas, ¿Corresponde a una contravención de tránsito',
     opciones: ['VERDADERO', 'FALSO', 'DESCONOCE'],
     respuesta: 'VERDADERO',
   },
@@ -913,7 +914,7 @@ export const preguntas = [
   {
     id: 89,
     pregunta:
-      'La o el conductor de un vehículo parCcular que tenga vidrios con películas anCsolares oscuras, polarizados o cualquier Cpo de adhesivo y que no tenga la debida autorización, ¿Corresponde a una contravención de tránsito?',
+      'La o el conductor de un vehículo particular que tenga vidrios con películas antisolares oscuras, polarizados o cualquier tipo de adhesivo y que no tenga la debida autorización, ¿Corresponde a una contravención de tránsito?',
     opciones: ['VERDADERO', 'FALSO', 'DESCONOCE'],
     respuesta: 'VERDADERO',
   },
@@ -934,7 +935,7 @@ export const preguntas = [
     pregunta:
       ' ¿Qué indican las líneas amarillas al borde de la calzada que se  observan en la imagen?',
     opciones: [
-      ' Indican a los conductores que es permi?do el parqueo vehículos',
+      ' Indican a los conductores que es permitido el parqueo vehículos',
       'Indican a los conductores que se permite el adelantamiento de vehículo',
       'Indican a los conductores, especialmente en caso de poca visibilidad, dónde se encuentra el borde de la calzada',
     ],
@@ -961,7 +962,7 @@ export const preguntas = [
   {
     id: 94,
     pregunta:
-      '¿¿Qué debe hacer el conductor cuando en la vía observe un cruce peatonal demarcado Cpo cebra como indica la imagen?',
+      '¿¿Qué debe hacer el conductor cuando en la vía observe un cruce peatonal demarcado tipo cebra como indica la imagen?',
     opciones: [
       ' Debe pitar para alertar al peatón que no baje de la vereda',
       'Debe ceder el paso a los peatones que se encuentran cruzando',
@@ -1065,7 +1066,7 @@ export const preguntas = [
     id: 104,
     pregunta: '¿Qué es la movilidad activa?',
     opciones: [
-      'Movimiento motorizado',
+      'Es aquella que depende del movimiento motorizado, incluyendo el transporte público',
       'Es aquella que depende del movimiento psico de las personas, incluye la caminata el uso de la bicicleta y movilidad personal',
       'Ninguna de las anteriores',
     ],
@@ -1076,7 +1077,7 @@ export const preguntas = [
     id: 105,
     pregunta: '¿Cuáles son derechos de los biciusuarios?',
     opciones: [
-      'erecho preferente de vía o circulación en los desvíos de avenidas y carreteras, cruce de caminos intersecciones no señalizadas y ciclovías',
+      'Derecho preferente de vía o circulación en los desvíos de avenidas y carreteras, cruce de caminos intersecciones no señalizadas y ciclovías',
       'Disponer de vías de circulación privilegiada dentro de las ciudades y en carreteras, como ciclovías y espacios similares',
       'Todas las anteriores',
     ],
@@ -1084,7 +1085,8 @@ export const preguntas = [
   },
   {
     id: 106,
-    pregunta: '¿Dónde tienen derecho a circular los ciclistas?',
+    pregunta:
+      'De acuerod a la normativa, ¿Dónde tienen derecho a circular los ciclistas?',
     opciones: [
       'Únicamente en las sendas especiales des?nadas al uso de bicicletas',
       'En las aceras, con cuidado respec?vo a los peatones',
@@ -1120,11 +1122,11 @@ export const preguntas = [
     pregunta: '¿Cuáles son las obligaciones de los peatones?',
     opciones: [
       'Solicitar transporte o pedir ayuda a los automovilistas en lugares apropiados o prohibidos ',
-      'Cruzar por las esquinas o cruces peatonales en las vías primarías y vías secundarias con más de dos carriles efecCvos de circulación; en vías secundarias que cuenten con un máximo de dos carriles efecCvos de circulación podrán cruzar en cualquier punto; y siempre y cuando le sea posible hacerlo de manera segura',
+      'Cruzar por las esquinas o cruces peatonales en las vías primarías y vías secundarias con más de dos carriles efectivos de circulación; en vías secundarias que cuenten con un máximo de dos carriles efectivos de circulación podrán cruzar en cualquier punto; y siempre y cuando le sea posible hacerlo de manera segura',
       'Cruzar la calle por la parte anterior y posterior de los automotores que se hayan detenido momentáneamente',
     ],
     respuesta:
-      'Cruzar por las esquinas o cruces peatonales en las vías primarías y vías secundarias con más de dos carriles efecCvos de circulación; en vías secundarias que cuenten con un máximo de dos carriles efecCvos de circulación podrán cruzar en cualquier punto; y siempre y cuando le sea posible hacerlo de manera segura',
+      'Cruzar por las esquinas o cruces peatonales en las vías primarías y vías secundarias con más de dos carriles efectivos de circulación; en vías secundarias que cuenten con un máximo de dos carriles efectivos de circulación podrán cruzar en cualquier punto; y siempre y cuando le sea posible hacerlo de manera segura',
   },
   {
     id: 110,
@@ -1141,8 +1143,8 @@ export const preguntas = [
     pregunta:
       'Uno de los objetivos de la Ley de Transporte Terrestre y Seguridad Vial es:',
     opciones: [
-      'Definir sus principios, garan?zar el derecho a la educación superior de calidad que propenda a la  excelencia',
-      'Contribuir al desarrollo del País a través de la formulación de políticas, regulaciones, planes, programas  y proyectos, que garan?cen el buen vivir',
+      'Definir sus principios, garantizar el derecho a la educación superior de calidad que propenda a la  excelencia',
+      'Contribuir al desarrollo del País a través de la formulación de políticas, regulaciones, planes, programas  y proyectos, que garanticen el buen vivir',
       'El establecimiento de programas de capacitación y difusión para conductores, peatones, pasajeros y autoridades, en materia de seguridad vial, para la creación de una cultura y conciencia vial responsable y solidaria',
     ],
     respuesta:
@@ -1185,7 +1187,7 @@ export const preguntas = [
     id: 115,
     pregunta: '¿Cuáles son los objetivos de la educación vial?',
     opciones: [
-      'Reducir de forma sistemá?ca los siniestros de tránsito',
+      'Reducir de forma sistemática los siniestros de tránsito',
       'Formar y capacitar a las personas en general para el uso correcto de todos los medios de transporte terrestre',
       'Todas las anteriores',
     ],
@@ -1216,16 +1218,20 @@ export const preguntas = [
   {
     id: 118,
     pregunta:
-      'El disposiCvo de seguridad pasiva que reduce el desplazamiento de la cabeza hacia atrás para evitar el efecto laCgazo cervical, se conoce como',
+      'El dispositivo de seguridad pasiva que reduce el desplazamiento de la cabeza hacia atrás para evitar el efecto latigazo cervical, se conoce como',
     opciones: ['Apoya cabeza', 'Cinturón de seguridad', 'Airbag'],
     respuesta: 'Apoya cabeza',
   },
   {
     id: 119,
     pregunta:
-      '¿Cómo se conoce al disposiCvo de seguridad pasiva incluida en algunos vehículos el cual se acciona en milisegundos al producirse un impacto?',
-    opciones: ['Apoya cabeza', 'Cinturón de seguridad', 'Airbag'],
-    respuesta: 'Airbag',
+      '¿Cómo se conoce al dispositivo de seguridad pasiva incluida en algunos vehículos el cual se acciona en milisegundos al producirse un impacto?',
+    opciones: [
+      'Apoya cabeza',
+      'Cinturón de seguridad',
+      ' Airbag o bolsa de aire',
+    ],
+    respuesta: ' Airbag o bolsa de aire',
   },
   {
     id: 120,
@@ -1265,7 +1271,7 @@ export const preguntas = [
   {
     id: 124,
     pregunta:
-      ' ¿A qué distancia mínima antes de una maniobra es obligatorio poner la respecCva luz intermitente? ',
+      ' ¿A qué distancia mínima antes de una maniobra es obligatorio poner la respectiva luz intermitente? ',
     opciones: [
       'Cuando ejecuto la maniobra',
       'Mínimo 30 metros antes',
@@ -1302,7 +1308,7 @@ export const preguntas = [
   {
     id: 128,
     pregunta:
-      '¿Qué debe realizar un conductor cuando ve que un bus escolar e insCtucional se deCene en una parada?',
+      '¿Qué debe realizar un conductor cuando ve que un bus escolar e institucional se detiene en una parada?',
     opciones: [
       'Acelerar la marcha para pasar al bus',
       'Esperar y dar el paso a todos los peatones que se bajan del bus',
@@ -1337,7 +1343,7 @@ export const preguntas = [
   {
     id: 131,
     pregunta:
-      'Cuando se conduzca un vehículo a motor y se requiera cruzar una acera para entrar o salir de un estacionamiento, ¿quién Cene preferencia de paso?',
+      'Cuando se conduzca un vehículo a motor y se requiera cruzar una acera para entrar o salir de un estacionamiento, ¿quién tiene preferencia de paso?',
     opciones: [
       'El conductor que esta saliendo',
       'Solo vehículos',
@@ -1360,14 +1366,14 @@ export const preguntas = [
   {
     id: 134,
     pregunta:
-      'En caso de que no exista señalización horizontal y/o verCcal, ¿Quién tendría derecho de paso en la vía en caso de que los usuarios presentes incluyan peatones, ciclistas, vehículos livianos, carga pesada?',
+      'En caso de que no exista señalización horizontal y/o vertical, ¿Quién tendría derecho de paso en la vía en caso de que los usuarios presentes incluyan peatones, ciclistas, vehículos livianos, carga pesada?',
     opciones: ['Peatones', 'Biciusuarios', 'Transporte de pasajeros'],
     respuesta: 'Peatones',
   },
   {
     id: 135,
     pregunta:
-      ' Si un peatón va a cruzar una intersección con luz verde del semáforo vehicular o una intersección no  regulada y un vehículo va girar, ¿Quién Cene la preferencia de paso?',
+      ' Si un peatón va a cruzar una intersección con luz verde del semáforo vehicular o una intersección no  regulada y un vehículo va girar, ¿Quién tiene la preferencia de paso?',
     opciones: ['El auto', 'El peatón', 'Los dos'],
     respuesta: 'El peatón',
   },
@@ -1401,7 +1407,7 @@ export const preguntas = [
   {
     id: 139,
     pregunta:
-      '¿En qué porcentaje disminuyen las probabilidades de muerte para un motociclista o ciclista durante un siniestro si uCliza casco homologado? ',
+      '¿En qué porcentaje disminuyen las probabilidades de muerte para un motociclista o ciclista durante un siniestro si utiliza casco homologado? ',
     opciones: ['No disminuyen', '1%', '39%'],
     respuesta: '39%',
   },
